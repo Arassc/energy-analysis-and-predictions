@@ -1,5 +1,5 @@
 #folders
-raw_data/
+raw-data/
 
 # enviromental variables
 .env
