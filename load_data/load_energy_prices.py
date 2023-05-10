@@ -37,22 +37,25 @@ def load_csv_file(filename:str, country:str)->list:
          'Hungary [€/MWh]']
 
     main_cols = [col for col in prices_df.columns if country in col]
-
-    #prices_df = prices_df[main_cols]
     df_list = []
     for col in main_cols:
-        #print(f'\t{col}')
         condition = prices_df[col] != '-'
         df = prices_df[condition]
-        #print(f'\t\t count of not null values = {df.shape[0]}')
         if df.shape[0] != 0 :
             df['Date'] = pd.to_datetime(df['Date'], format='%d.%m.%Y')
             df = df[['Date', col]]
+            if df[col].dtypes == 'object':
+                df[col] = df[col].str.replace(',', '.')
+                df[col] = df[col].astype(float)
             df_list.append(df)
 
     return df_list
 
 def average_price_from_merge_df_list(df_list:list, country:str)->pd.DataFrame:
+    """
+    Merge the dataframes in list and average the price value to get a final price.\n
+    The indices of the dataframes should be the same for all dataframes in the list.
+    """
     df = functools.reduce(lambda left, right: pd.merge(left, right, on='Date'), df_list)
     len_cols = len(df.columns)
     selected_cols = df.columns[1:len_cols]
@@ -62,7 +65,8 @@ def average_price_from_merge_df_list(df_list:list, country:str)->pd.DataFrame:
 
 def concat_df_list(df_list:list, country:str)-> pd.DataFrame:
     """
-
+    Concat dataframes in list. The data frames should have different indices \n
+    and therefore each dataframe can be concataned and complete the final dataframe
     """
     for df in df_list:
         df.columns = ['Date', f'{country} [€/MWh]']
@@ -115,7 +119,7 @@ def get_final_price_value(df_list:list, country:str)->pd.DataFrame:
 
 def load_energy_prices_data(filename:str, country:str)->pd.DataFrame:
     """
-    load energy price data for a specific country using load_csv_file function.\n
+    Load energy price data for a specific country using load_csv_file function.\n
     Data is already cleaned up using get_final_price_value function.
     """
     df_list = load_csv_file(filename, country)
