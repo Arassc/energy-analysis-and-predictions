@@ -59,7 +59,7 @@ def get_X_y_train_and_test_data(df:pd.DataFrame,
                                 train_test_ratio: float,
                                 train_test_sequence: int,
                                 fold_length_ratio: float,
-                                folds_sequence: int,
+                                fold_sequence: int,
                                 output_length: int,
                                 target: str) -> Tuple[pd.DataFrame]:
 
@@ -67,16 +67,19 @@ def get_X_y_train_and_test_data(df:pd.DataFrame,
     (df_train, df_test) = get_train_test_split(df, train_test_ratio, train_test_sequence)
 
     # get folds length and the number of created folds
-    INPUT_LENGTH_FOLD_TRAIN = round((df_train.shape[0]-output_length)*fold_length_ratio)
-    print('INPUT_LENGTH_FOLD_TRAIN =', INPUT_LENGTH_FOLD_TRAIN)
-    INPUT_LENGTH_FOLD_TEST = round((df_test.shape[0]-output_length)*fold_length_ratio)
-    print('INPUT_LENGTH_FOLD_TEST =', INPUT_LENGTH_FOLD_TEST)
-    total_number_train_folds = df_train.shape[0] - INPUT_LENGTH_FOLD_TRAIN - output_length + folds_sequence
-    total_number_test_folds = df_test.shape[0] - INPUT_LENGTH_FOLD_TEST - output_length + folds_sequence
+        # fold_length_train =  fold_length_test otherwise there is a problem when predicting test data:
+        # ValueError: Input 0 of layer "sequential_2" is incompatible with the layer:
+            # expected shape=(None, 812, 1), found shape=(None, 604, 1)
+
+    input_length_folds = round((df_test.shape[0]-output_length)*fold_length_ratio)
+    print('folds length =', input_length_folds)
+
+    total_number_train_folds = df_train.shape[0] - input_length_folds - output_length + fold_sequence
+    total_number_test_folds = df_test.shape[0] - input_length_folds - output_length + fold_sequence
     print(f'{total_number_train_folds} train folds generated')
     print(f'{total_number_test_folds} test folds generated')
 
     # get X and y strides
-    (X_train, y_train) = get_X_y_strides(df_train, INPUT_LENGTH_FOLD_TRAIN, output_length, folds_sequence, target)
-    (X_test, y_test) = get_X_y_strides(df_test, INPUT_LENGTH_FOLD_TEST, output_length, folds_sequence, target)
+    (X_train, y_train) = get_X_y_strides(df_train, input_length_folds, output_length, fold_sequence, target)
+    (X_test, y_test) = get_X_y_strides(df_test, input_length_folds, output_length, fold_sequence, target)
     return X_train, y_train, X_test, y_test
