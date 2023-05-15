@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import math
 from typing import Dict, List, Tuple
+from process_data.preprocessor import scale_data
 
 
 def get_train_test_split(df: pd.DataFrame,
@@ -83,3 +84,33 @@ def get_X_y_train_and_test_data(df:pd.DataFrame,
     (X_train, y_train) = get_X_y_strides(df_train, input_length_folds, output_length, fold_sequence, target)
     (X_test, y_test) = get_X_y_strides(df_test, input_length_folds, output_length, fold_sequence, target)
     return X_train, y_train, X_test, y_test
+
+
+def get_scaled_X_y_train_and_test_data(df:pd.DataFrame,
+                                train_test_ratio: float,
+                                train_test_sequence: int,
+                                fold_length_ratio: float,
+                                fold_sequence: int,
+                                output_length: int,
+                                target: str) -> Tuple:
+
+    # split train and test data
+    (df_train, df_test) = get_train_test_split(df, train_test_ratio, train_test_sequence)
+
+    # scale data
+    scaler = scale_data(df_train)
+    df_train_scaled = scaler.transform(df_train)
+    df_test_scaled = scaler.transform(df_test)
+    df_train_scaled = pd.DataFrame(df_train_scaled)
+    df_train_scaled.columns = [target]
+    df_test_scaled = pd.DataFrame(df_test_scaled)
+    df_test_scaled.columns = [target]
+
+    # get folds length and the number of created folds
+    input_length_folds = round((df_test_scaled.shape[0]-output_length)*fold_length_ratio)
+    print('folds length =', input_length_folds)
+
+    # get X and y strides
+    (X_train, y_train) = get_X_y_strides(df_train_scaled, input_length_folds, output_length, fold_sequence, target)
+    (X_test, y_test) = get_X_y_strides(df_test_scaled, input_length_folds, output_length, fold_sequence, target)
+    return X_train, y_train, X_test, y_test, scaler

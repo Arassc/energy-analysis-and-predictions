@@ -1,11 +1,19 @@
 import matplotlib.pyplot as plt
-def plot_history(history):
+import tensorflow as tf
+def plot_history(history: tf.keras.callbacks.History,
+                 train_test_ratio: float,
+                 train_test_sequence: int,
+                 fold_length_ratio: float,
+                 fold_sequence: int,
+                 units_layer_1: int,
+                 units_layer_2: int):
 
     fig, ax = plt.subplots(1,2, figsize=(20,7))
     # --- LOSS: MSE ---
     ax[0].plot(history.history['loss'])
     ax[0].plot(history.history['val_loss'])
-    ax[0].set_title('MSE')
+    ax[0].set_title(f'MSE, split_ratio= {train_test_ratio}, split_seq= {train_test_sequence},\
+    fold_ratio= {fold_length_ratio}, fold_seq= {fold_sequence}, layer_1= {units_layer_1}, layer_2= {units_layer_2}')
     ax[0].set_ylabel('Loss')
     ax[0].set_xlabel('Epoch')
     ax[0].legend(['Train', 'Validation'], loc='best')
