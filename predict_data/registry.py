@@ -46,6 +46,6 @@ def evaluate_model(model: Sequential, X_test: np.ndarray, y_test: np.ndarray) ->
     result = model.evaluate(X_test, y_test, verbose = 1)
     return result
 
-def predict(model: Sequential, X_test: np.ndarray) -> np.ndarray:
+def predict_model(model: Sequential, X_test: np.ndarray) -> np.ndarray:
     y_pred = model.predict(X_test)
     return y_pred

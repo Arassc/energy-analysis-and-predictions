@@ -39,9 +39,11 @@ def load_csv_file(filename:str, country:str)->list:
     main_cols = [col for col in prices_df.columns if country in col]
     df_list = []
     for col in main_cols:
+        print(f'\t{col}')
         condition = prices_df[col] != '-'
         df = prices_df[condition]
         if df.shape[0] != 0 :
+            print(f'\t\t df.shape ={df.shape}')
             df['Date'] = pd.to_datetime(df['Date'], format='%d.%m.%Y')
             df = df[['Date', col]]
             if df[col].dtypes == 'object':
@@ -73,7 +75,31 @@ def concat_df_list(df_list:list, country:str)-> pd.DataFrame:
     df_final = pd.concat(df_list).sort_index()
     return df_final
 
-def get_final_price_value(df_list:list, country:str)->pd.DataFrame:
+def combine_two_dataframes(df_list: list, country: str) -> pd.DataFrame:
+
+    df = pd.DataFrame.empty
+
+    if len(df_list) == 2:
+        index_df0 = list(df_list[0].index)
+        index_df1 = list(df_list[1].index)
+
+        if index_df0 == index_df1:
+            print(f'\taverage df')
+            df = average_price_from_merge_df_list(df_list, country)
+        else:
+            if len(index_df0) == 365:
+                print(f'\tdf0 taken')
+                df = df_list[0]
+            if len(index_df1) == 365:
+                print(f'\tdf1 taken')
+                df = df_list[0]
+            if (len(index_df0) + len(index_df1)) == 365:
+                print(f'\tconcat df')
+                df = concat_df_list(df_list, country)
+    return df
+
+
+def get_final_price_value(df_list: list, country: str)->pd.DataFrame:
 
     df = pd.DataFrame.empty
 
@@ -83,13 +109,7 @@ def get_final_price_value(df_list:list, country:str)->pd.DataFrame:
 
     # df list with length 2
     if len(df_list) == 2:
-        index_df0 = list(df_list[0].index)
-        index_df1 = list(df_list[1].index)
-
-        if index_df0 == index_df1:
-            df = average_price_from_merge_df_list(df_list, country)
-        else:
-            df = concat_df_list(df_list, country)
+        df = combine_two_dataframes(df_list, country)
 
     # df list with length 3
     if len(df_list) == 3:
@@ -98,19 +118,28 @@ def get_final_price_value(df_list:list, country:str)->pd.DataFrame:
         index_df2 = list(df_list[2].index)
 
         if index_df0 == index_df1 and index_df2 == index_df1:
+            print(f'\tavergae df')
             df = average_price_from_merge_df_list(df_list, country)
 
         if index_df0 == index_df1 and index_df2 != index_df1:
+            print(f'\taverge df0 and df1 and then concat df2')
             df1 = average_price_from_merge_df_list(df_list[0:2])
             df_list2 = [df1, df_list[2]]
-            df = concat_df_list(df_list2, country)
+            df = combine_two_dataframes(df_list2, country)
 
         if index_df0 == index_df2 and index_df2 != index_df1:
+            print(f'\taverge df0 and df2 and then concat df1')
             df1 = average_price_from_merge_df_list([df_list[0], df_list[2]])
             df_list2 = [df1, df_list[1]]
-            df = concat_df_list(df_list2, country)
+            df = combine_two_dataframes(df_list2, country)
 
+        if index_df1 == index_df2 and index_df0 != index_df1:
+            print(f'\taverge df1 and df2 and then concat df0')
+            df1 = average_price_from_merge_df_list([df_list[1], df_list[2]])
+            df_list2 = [df1, df_list[0]]
+            df = combine_two_dataframes(df_list2, country)
         else:
+            print(f'\tconcat dfs')
             df = pd.concat(df_list).sort_index()
 
     df.columns = ['Date', f'{country} [€/MWh]']
@@ -133,10 +162,11 @@ def load_energy_prices_from_all_files(folder:str, country:str)->pd.DataFrame:
         print(file)
         filename = os.path.join(folder, file)
         df = load_energy_prices_data(filename, country)
-        print(df.columns)
+        #print(df.columns)
         df.set_index('Date', inplace=True)
-        print(df.columns)
+        #print(df.columns)
         df_list.append(df)
+        print('\n')
 
     final_df = pd.concat(df_list).sort_index()
     return final_df

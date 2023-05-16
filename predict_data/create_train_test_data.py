@@ -101,6 +101,8 @@ def get_scaled_X_y_train_and_test_data(df:pd.DataFrame,
     scaler = scale_data(df_train)
     df_train_scaled = scaler.transform(df_train)
     df_test_scaled = scaler.transform(df_test)
+
+    # transforme scale data nump into a Dataframe
     df_train_scaled = pd.DataFrame(df_train_scaled)
     df_train_scaled.columns = [target]
     df_test_scaled = pd.DataFrame(df_test_scaled)
