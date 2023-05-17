@@ -48,7 +48,7 @@ def load_csv_file(filename:str, country:str)->list:
             df = df[['Date', col]]
             if df[col].dtypes == 'object':
                 df[col] = df[col].str.replace(',', '.')
-                df[col] = df[col].astype(float)
+                df[col] = df[col].astype('float32')
             df_list.append(df)
 
     return df_list

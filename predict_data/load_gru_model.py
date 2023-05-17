@@ -30,13 +30,13 @@ def load_gru_model(X_train: np.ndarray, y_train: np.ndarray,
     ## Recurrent Layer
     model.add(layers.GRU(units=units_gru_layer_1,
                           activation=activation_function,
-                          return_sequences = True,
+                          return_sequences=True,
                           kernel_regularizer=regularizer,
                           input_shape = X_train[0].shape)
                           )
     model.add(layers.GRU(units=units_gru_layer_2,
-                        return_sequences = False,
-                        activation = activation_function))
+                        return_sequences=False,
+                        activation=activation_function))
 
     model.add(layers.Dense(units=25, activation="relu"))
 

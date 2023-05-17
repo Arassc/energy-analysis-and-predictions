@@ -1,51 +1,66 @@
-
+import os
+import mlflow
+from mlflow.tracking import MlflowClient
+import pickle
 from tensorflow import keras
-from keras import Sequential, optimizers
-import numpy as np
-from keras.callbacks import EarlyStopping
-from typing import Tuple
+from utils.parameters import MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT,\
+                            MODEL_TARGET, LOCAL_REGISTRY_PATH,\
+                            MLFLOW_MODEL_NAME
 
-def compile_model(model: Sequential, learning_rate: int, optimizer="rmsprop", metric="mae")-> Sequential:
+# information https://mlflow.org/docs/latest/tracking.html#tracking-server
+
+def mlflow_run(func):
+    def wrapper(*args, **kwargs):
+        mlflow.end_run()
+        mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
+        mlflow.set_experiment(MLFLOW_EXPERIMENT)
+        with mlflow.start_run():
+            mlflow.tensorflow.autolog()
+            results = func(*args, **kwargs)
+        print('mlflow_run auto log done')
+        return results
+    return wrapper
+
+
+def save_results(params: dict, metrics: dict, model_name: str):
     """
-    method that compiles the selected model. \n
-    by default the optimizer is RMSprop\n
-    by defaul metric ="mae"\n
+    Save params & metrics locally on hard drive at
+    "{LOCAL_REGISTRY_PATH}/params/{current_timestamp}.pickle"
+    "{LOCAL_REGISTRY_PATH}/metrics/{current_timestamp}.pickle"
+    - (unit 03 only) if MODEL_TARGET='mlflow', also persist them on mlflow
     """
-    opt = optimizers.RMSprop(learning_rate=learning_rate)
-    if optimizer == 'adam':
-        opt = optimizers.Adam(learning_rate=learning_rate)
-    if optimizer == 'nadam':
-        opt = optimizers.Nadam(learning_rate=learning_rate)
+    if MODEL_TARGET == 'mlflow':
+        if params is not None:
+            mlflow.log_param(params)
+        if metrics is not None:
+            mlflow.log_metrics(metrics)
+        print('results saved in mlflow')
 
-    model.compile(loss='mse', optimizer=opt, metrics=[metric])
+    else:
+        if params is not None:
+            params_path = os.path.join(LOCAL_REGISTRY_PATH, 'params', model_name, '.pickle')
+            with open(params_path, 'wb') as file:
+                pickle.dump(params, file)
 
-    return model
+        if metrics is not None:
+            metrics_path = os.path.join(LOCAL_REGISTRY_PATH, 'metrics', model_name, '.pickle')
+            with open(metrics_path, 'wb') as file:
+                pickle.dump(metrics, file)
 
-def fit_model(model: Sequential, X_train: np.ndarray, y_train: np.ndarray,
-              patience:int, epochs_num: int, batch_size: int)->  Tuple[Sequential, dict]:
+        print('results saved locally')
 
-    es = EarlyStopping(patience=patience, monitor="val_loss",  mode = "min", start_from_epoch=0,
-                       restore_best_weights = True)
-
-    #es = EarlyStopping(patience=patience)
-
-    history = model.fit(X_train, np.array(y_train),
-            validation_split=0.3,
-            batch_size=batch_size,
-            epochs=epochs_num,
-            verbose=1,
-            callbacks=[es])
-
-    return model, history
-
-
-def evaluate_model(model: Sequential, X_test: np.ndarray, y_test: np.ndarray) -> list:
+def save_model(model: keras.Model, model_name: str):
+    """ Save trained model locally on hard drive at f"{LOCAL_REGISTRY_PATH}/models/{timestamp}.h5"
+    - if MODEL_TARGET='mlflow', also persist it on mlflow instead of GCS (for unit 0703 only) --> unit 03 only
     """
-    returns loss and mae in a list
-    """
-    result = model.evaluate(X_test, y_test, verbose = 1)
-    return result
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, model_name)
+    model.save(model_path)
 
-def predict_model(model: Sequential, X_test: np.ndarray) -> np.ndarray:
-    y_pred = model.predict(X_test)
-    return y_pred
+    if MODEL_TARGET == "mlflow":
+        mlflow.tensorflow.log_model(model=model,
+                        artifact_path="model",
+                        registered_model_name=MLFLOW_MODEL_NAME
+                        )
+
+#TODO load_model
+#TODO mlflow_transion_model

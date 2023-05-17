@@ -17,7 +17,7 @@ def get_train_test_split(df: pd.DataFrame,
     fold_train = df.iloc[0:train_size]
     fold_test = df.iloc[train_size-train_test_sequence:]
     len_train = round(df.shape[0]*train_test_ratio)
-    len_test = df.shape[0]- len_train + train_test_sequence
+    len_test = df.shape[0] - len_train + train_test_sequence
     print(f'length train data {len_train}')
     print(f'length test data {len_test}')
     return fold_train, fold_test
