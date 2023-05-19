@@ -5,7 +5,6 @@ from keras.regularizers import L1L2, L1, L2
 import numpy as np
 
 def load_gru_model(X_train: np.ndarray, y_train: np.ndarray,
-                   units_gru_layer_1: int, units_gru_layer_2: int,
                    activation_function: str,
                    regularizer=None, penalty=0.0) -> Sequential:
     """
@@ -28,19 +27,20 @@ def load_gru_model(X_train: np.ndarray, y_train: np.ndarray,
         regularizer= L2(penalty)
 
     ## Recurrent Layer
-    model.add(layers.GRU(units=units_gru_layer_1,
+    model.add(layers.GRU(units=32,
                           activation=activation_function,
                           return_sequences=True,
                           kernel_regularizer=regularizer,
                           input_shape = X_train[0].shape)
                           )
-    model.add(layers.GRU(units=units_gru_layer_2,
-                        return_sequences=False,
+
+    model.add(layers.GRU(units=32,
+                        return_sequences=True,
                         activation=activation_function))
 
-    model.add(layers.Dense(units=25, activation="relu"))
+    model.add(layers.GRU(units=32, activation="sigmoid"))
 
     ## Predictive Dense Layers
-    output_length = y_train.shape[1]
-    model.add(layers.Dense(output_length, activation='relu'))
+    output_shape = y_train.shape[1]
+    model.add(layers.Dense(units=output_shape, activation='linear'))
     return model

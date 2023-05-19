@@ -33,7 +33,7 @@ def train_model(model: Model, X_train: np.ndarray, y_train: np.ndarray,
             validation_split=0.3,
             batch_size=batch_size,
             epochs=epochs_num,
-            verbose=1,
+            verbose=0,
             callbacks=[es])
 
     return model, history

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import math
-from typing import Dict, List, Tuple
+from typing import Tuple
 from process_data.preprocessor import scale_data
 
 
@@ -48,42 +48,13 @@ def get_X_y_strides(df: pd.DataFrame,
     while i <= (df.shape[0] - input_length_folds - output_length):
         #print(f'start index {i}')
         X_i = df.iloc[i : i + input_length_folds, :]
-        y_i = df.iloc[i + input_length_folds : i + input_length_folds + output_length, :][[target]]
+        y_i = df.iloc[i + input_length_folds : i + input_length_folds + output_length][target]
         X.append(X_i)
         y.append(y_i)
         i = i + sequence_stride
         #print(f'end index = {i + fold_length}')
 
     return np.array(X), np.array(y)
-
-def get_X_y_train_and_test_data(df:pd.DataFrame,
-                                train_test_ratio: float,
-                                train_test_sequence: int,
-                                fold_length_ratio: float,
-                                fold_sequence: int,
-                                output_length: int,
-                                target: str) -> Tuple[pd.DataFrame]:
-
-    # split train and test data
-    (df_train, df_test) = get_train_test_split(df, train_test_ratio, train_test_sequence)
-
-    # get folds length and the number of created folds
-        # fold_length_train =  fold_length_test otherwise there is a problem when predicting test data:
-        # ValueError: Input 0 of layer "sequential_2" is incompatible with the layer:
-            # expected shape=(None, 812, 1), found shape=(None, 604, 1)
-
-    input_length_folds = round((df_test.shape[0]-output_length)*fold_length_ratio)
-    print('folds length =', input_length_folds)
-
-    total_number_train_folds = df_train.shape[0] - input_length_folds - output_length + fold_sequence
-    total_number_test_folds = df_test.shape[0] - input_length_folds - output_length + fold_sequence
-    print(f'{total_number_train_folds} train folds generated')
-    print(f'{total_number_test_folds} test folds generated')
-
-    # get X and y strides
-    (X_train, y_train) = get_X_y_strides(df_train, input_length_folds, output_length, fold_sequence, target)
-    (X_test, y_test) = get_X_y_strides(df_test, input_length_folds, output_length, fold_sequence, target)
-    return X_train, y_train, X_test, y_test
 
 
 def get_scaled_X_y_train_and_test_data(df:pd.DataFrame,
@@ -98,7 +69,7 @@ def get_scaled_X_y_train_and_test_data(df:pd.DataFrame,
     (df_train, df_test) = get_train_test_split(df, train_test_ratio, train_test_sequence)
 
     # scale data
-    scaler = scale_data(df_train)
+    scaler = scale_data(df_train,-1,1)
     df_train_scaled = scaler.transform(df_train)
     df_test_scaled = scaler.transform(df_test)
 
