@@ -48,22 +48,31 @@ def load_company_data_by_sector():
         df = pd.read_csv(filename, delimiter=';', decimal=',')
         # clean df
         company = file.split('_20')[0]
-        print(f'0 company ={company}.')
+        #print(f'0 company ={company}.')
         if company in DICT_COMPANIES_NAME_TO_CHANGE.keys():
             company = DICT_COMPANIES_NAME_TO_CHANGE[company]
             print(f'1 company ={company}.')
 
         company = company.replace('_', '-')
-        print(f'2 company ={company}.')
+        print(f'2 company ={company}')
         df = clean_data(df, company)
-        #condition = sector_df['Name'].str.contains(company)
-        condition = sector_df['Name'] == company
-        company_df = sector_df[condition]
-        print('company df that matches condition:')
-        print(company_df)
-        print('')
-        company_sector = company_df['Sector'].values[0]
-        dict_companies[company_sector].append(df)
+        if len(df.columns)==4:
+            #print('more than 4 columns')
+            #print(df.columns)
+            df.columns = ['Date', 'Start', 'End', f'{company} [MW]']
+            condition = sector_df['Name'] == company
+            company_df = sector_df[condition]
+            #print('company df that matches condition:')
+            #print(company_df)
+            #print('')
+            company_sector = company_df['Sector'].values[0]
+            print(company_sector)
+            dict_companies[company_sector].append(df)
+        else:
+            print('not the right number of columns')
+            print(df.columns)
+            print('not added to dict')
+
         print('*************************************************************************')
 
     return dict_companies
@@ -86,7 +95,7 @@ def clean_column_dataframe(df: pd.DataFrame, col:str):
 
 def interpolate_nan_values(df: pd.DataFrame, col: str) -> pd.DataFrame:
     nan_val = (df[col].isna().value_counts()*100/df.shape[0])
-    print('nan_values', nan_val)
+    #print('nan_values', nan_val)
     if nan_val[1] <= 30:
         imputer = SimpleImputer(strategy="mean")
         df[col] = imputer.fit_transform(df[[col]])
@@ -109,7 +118,7 @@ def sum_multiple_energy_values(df: pd.DataFrame, filename: str):
 def clean_data(df: pd.DataFrame, name) -> pd.DataFrame:
     # get energy generated columns
     cols =  df.columns[3:]
-    print('all columns=', df.columns)
+    #print('all columns=', df.columns)
 
     # remove weird first raw
     df = remove_weird_first_raw(df)
@@ -127,7 +136,7 @@ def clean_data(df: pd.DataFrame, name) -> pd.DataFrame:
             df = interpolate_nan_values(df, col)
 
     # average multiple energy generated values
-    print('df.columns = ', df.columns)
+    #print('df.columns = ', df.columns)
     if len(df.columns) > 4:
         df = sum_multiple_energy_values(df, name)
     return df

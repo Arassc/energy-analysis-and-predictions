@@ -35,7 +35,17 @@ DICT_COMPANIES_NAME_TO_CHANGE = {'Altenw_rth': 'Altenwoerth',
                                  'Heizkraftwerk_M_nchen_S_d_GUD1_': 'Heizkraftwerk-Muenchen-Sued-GUD1',
                                  'Heizkraftwerk_M_nchen_S_d_GUD2': 'Heizkraftwerk-Muenchen-Sued-GUD2',
                                  'Heizkraftwerk_West__Frankfurt_': 'Heizkraftwerk-West-(Frankfurt)',
-                                 'Kraftwerk_BASF_Ludwigshafen_S_d' : 'Kraftwerk_BASF_Ludwigshafen_Sued'
+                                 'Kraftwerk_BASF_Ludwigshafen_S_d' : 'Kraftwerk_BASF_Ludwigshafen_Sued',
+                                 'Kraftwerk_J_nschwalde' : 'Kraftwerk-Jaenschwalde',
+                                 'Kraftwerk_K_htai' : 'Kraftwerk-Kuehtai',
+                                 'Kraftwerk_Mittelsb_ren' : 'Kraftwerk-Mittelsbueren',
+                                 'Niederau_em' : 'Niederaussem',
+                                 'Restm_ll-Heizkraftwerk_Stuttgart-M_nster' : 'Restmuell-Heizkraftwerk-Stuttgart-Muenster',
+                                 'Thei_' : 'Theiss',
+                                 'Trianel_Kohlekraftwerk_L_nen' : 'Trianel-Kohlekraftwerk-Luenen',
+                                 'V_lklingen' : 'Voelklingen',
+                                 'Vorarlberger_Illwerke_AG__Obervermuntwerk_II_' : 'Vorarlberger-Illwerke-AG-"Obervermuntwerk-II"',
+                                 'Vorarlberger_Illwerke_AG__Rellswerk_' : 'Vorarlberger-Illwerke-AG-"Rellswerk"'
                                  }
 
 LIST_WEIRD_FIRST_RAW = ['[MW] Berechnete Auflösungen', '(3 GT + 1 DT, Sammelschiene)', 'GT 1, GT 2, DT 1 [MW] Berechnete Auflösungen']
