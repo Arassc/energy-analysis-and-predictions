@@ -37,12 +37,15 @@ def load_company_data_by_sector():
     # get folder with company data
     power_plant_list = os.listdir(ENERGY_COMPANIES_FOLDER)
     power_plant_list.sort()
+
+    # take only csv files
     for file in power_plant_list:
         if 'Identifier' in file:
             power_plant_list.remove(file)
 
+    #group all companies by sector using a dictionary
     for file in power_plant_list:
-        print(file)
+        #print(file)
         # load file
         filename = os.path.join(ENERGY_COMPANIES_FOLDER, file)
         df = pd.read_csv(filename, delimiter=';', decimal=',')
@@ -51,7 +54,7 @@ def load_company_data_by_sector():
         #print(f'0 company ={company}.')
         if company in DICT_COMPANIES_NAME_TO_CHANGE.keys():
             company = DICT_COMPANIES_NAME_TO_CHANGE[company]
-            print(f'1 company ={company}.')
+            #print(f'1 company ={company}.')
 
         company = company.replace('_', '-')
         print(f'2 company ={company}')
@@ -70,7 +73,7 @@ def load_company_data_by_sector():
             dict_companies[company_sector].append(df)
         else:
             print('not the right number of columns')
-            print(df.columns)
+            #print(df.columns)
             print('not added to dict')
 
         print('*************************************************************************')
@@ -122,6 +125,7 @@ def clean_data(df: pd.DataFrame, name) -> pd.DataFrame:
 
     # remove weird first raw
     df = remove_weird_first_raw(df)
+
     # change date to datetime type
     df['Datum'] = pd.to_datetime(df['Datum'], format='%d.%m.%Y')
 
