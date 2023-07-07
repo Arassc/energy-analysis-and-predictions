@@ -89,10 +89,12 @@ def remove_weird_first_raw(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def clean_column_dataframe(df: pd.DataFrame, col:str):
-    df[col] = df[col].str.replace('.', '')
-    df[col] = df[col].str.replace(',', '.')
-    df[col] = df[col].replace('-', np.nan)
-    df[col] = df[col].astype('float64')
+    print(df.dtypes)
+    if df[col].dtype != 'float64':
+        df[col] = df[col].str.replace('.', '')
+        df[col] = df[col].str.replace(',', '.')
+        df[col] = df[col].replace('-', np.nan)
+        df[col] = df[col].astype('float64')
     #df[col] = df[col]/1000 # true scale
     return df
 

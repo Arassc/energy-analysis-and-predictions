@@ -5,7 +5,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 DICT_GREEN_ENERGIES = {'Photovoltaik':1004068, 'Wind (Onshore)':1004067, 'Wind (Offshore)':1001225, 'Erdgas':1004071}
 
-def load_green_energy_data(energy, region, initial_iteration, limit_iteration):
+import numpy as np
+import pandas as pd
+import os
+pd.options.mode.chained_assignment = None
+from sklearn.impute import SimpleImputer
+from utils.parameters import GREEN_ENERGIES_FOLDER
+from load_data.load_energy_produced_by_companies import clean_column_dataframe
+
+def get_green_energy_data_from_web(energy, region, initial_iteration, limit_iteration):
 
     # parameters
     i = initial_iteration
@@ -66,3 +74,37 @@ def load_green_energy_data(energy, region, initial_iteration, limit_iteration):
         # close the file download window
         driver.close()
         i=i+1
+
+def load_green_energy_data(energy:str) -> pd.DataFrame:
+    folder = GREEN_ENERGIES_FOLDER + energy
+    energy_list = os.listdir(folder)
+    energy_list.sort()
+    df_list = []
+    energy_col = energy + ' [MWh]'
+
+    for file in energy_list:
+        # take only csv files
+        if 'Identifier' not in file:
+            info = file.split('_')
+            print('file = ', info[2][0:4] + '-' + info[2][4:6] + '-' + info[2][6:8] + ' ' + info[2][8:10] + ':' + info[2][10:12])
+
+            df = pd.read_csv(GREEN_ENERGIES_FOLDER + energy + '/' + file, delimiter=';', decimal=',')
+
+            df = clean_and_group_data_per_hour(df, energy_col)
+
+            df_list.append(df)
+
+    final_df = pd.concat(df_list).sort_index()
+    return final_df
+
+
+def clean_and_group_data_per_hour(df: pd.DataFrame, energy_col:str) -> pd.DataFrame:
+    df.columns = ['Datum', 'Anfang', 'Ende', energy_col]
+    df['Timestamp'] = pd.to_datetime(df['Datum'] + ' ' + df['Ende'], format='%d.%m.%Y %H:%M')
+    df = df.drop(columns=['Datum','Anfang', 'Ende'])
+    df = clean_column_dataframe(df, energy_col)
+
+    # sum power values for every hour and ignoring timestamp column
+    dict_grouping = {'Timestamp': 'last',  energy_col : 'sum'}
+    df = df.groupby(df.index // 4).agg(dict_grouping)
+    return df
