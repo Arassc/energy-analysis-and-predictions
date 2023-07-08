@@ -94,7 +94,11 @@ def load_green_energy_data(energy:str) -> pd.DataFrame:
 
             df_list.append(df)
 
-    final_df = pd.concat(df_list).sort_index()
+    final_df = pd.concat(df_list)#.sort_index()
+    final_df.reset_index(drop=True)
+    #solar_energy = solar_energy.sort_values(by='Timestamp')
+    #solar_energy.reset_index(drop=True)
+
     return final_df
 
 
@@ -108,3 +112,6 @@ def clean_and_group_data_per_hour(df: pd.DataFrame, energy_col:str) -> pd.DataFr
     dict_grouping = {'Timestamp': 'last',  energy_col : 'sum'}
     df = df.groupby(df.index // 4).agg(dict_grouping)
     return df
+
+
+# Realisierte_Erzeugung_2021-07-06-0059_2021-07-08-0059_viertelstunde
