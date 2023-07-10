@@ -18,8 +18,8 @@ def get_seasonal_power_avg_per_hour(df:pd.DataFrame, energy_sector:str, date_sta
         timestamp_list.append(timestamp)
         power_list.append(test.mean(axis=0).values[0])
 
-    seasonal = {'Timestamp':timestamp_list, energy_sector:power_list}
-    seasonal_df = pd.DataFrame(seasonal, columns=['Timestamp', energy_sector])
+    seasonal = {'Timestamp':timestamp_list, energy_sector + ' [MWh]' : power_list}
+    seasonal_df = pd.DataFrame(seasonal, columns=['Timestamp', energy_sector + ' [MWh]'])
     return seasonal_df
 
 def get_dict_of_seasons(df_all:pd.DataFrame, energy_sector:str)-> dict:
@@ -31,15 +31,16 @@ def get_dict_of_seasons(df_all:pd.DataFrame, energy_sector:str)-> dict:
     for year in years:
 
         for key, values in SEASONS_DICT.items():
-
-            star_val = str(year) + values[0]
+            start_val = str(year) + values[0]
             end_val =  str(year) + values[1]
-            date_start =  datetime.strptime(star_val, '%Y-%m-%d %H:%M:%S')
+            if key == 'Winter' and min_year.is_month_start and year == min_year.year:
+                start_val = str(year-1) + values[0]
+            date_start =  datetime.strptime(start_val, '%Y-%m-%d %H:%M:%S')
             date_end =  datetime.strptime(end_val, '%Y-%m-%d %H:%M:%S')
 
             if date_start < max_year:
 
-                date_start =  star_val if date_start >= min_year else min_year
+                date_start =  start_val if date_start >= min_year else min_year
                 date_end = end_val if date_end <= max_year else max_year
 
                 print('date_start', date_start)
