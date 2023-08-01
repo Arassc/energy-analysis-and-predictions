@@ -86,7 +86,7 @@ def load_green_energy_data(energy:str) -> pd.DataFrame:
         # take only csv files
         if 'Identifier' not in file:
             info = file.split('_')
-            print('file = ', info[2][0:4] + '-' + info[2][4:6] + '-' + info[2][6:8] + ' ' + info[2][8:10] + ':' + info[2][10:12])
+            #print('file = ', info[2][0:4] + '-' + info[2][4:6] + '-' + info[2][6:8] + ' ' + info[2][8:10] + ':' + info[2][10:12])
 
             df = pd.read_csv(GREEN_ENERGIES_FOLDER + energy + '/' + file, delimiter=';', decimal=',')
 

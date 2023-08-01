@@ -23,8 +23,8 @@ WINTER_END = '-03-20 00:00:00'
 SPRING_START = '-03-21 1:00:00'
 SPRING_END = '-06-20 00:00:00'
 
-SOMMER_START = '-06-21 1:00:00'
-SOMMER_END = '-09-21 00:00:00'
+SUMMER_START = '-06-21 1:00:00'
+SUMMER_END = '-09-21 00:00:00'
 
 AUTUM_START = '-09-22 1:00:00'
 AUTUM_END = '-12-20 00:00:00'
@@ -32,9 +32,8 @@ AUTUM_END = '-12-20 00:00:00'
 
 SEASONS_DICT = {'Winter' : [WINTER_START, WINTER_END],
                 'Spring' : [SPRING_START, SPRING_END],
-                'Sommer' : [SOMMER_START, SOMMER_END],
-                'Autum' : [AUTUM_START, AUTUM_END]
-                }
+                'Summer' : [SUMMER_START, SUMMER_END],
+                'Autum' : [AUTUM_START, AUTUM_END]}
 
 # Power Plants
 LIST_COMA_DELIMITER_FILES = ['Abwinden-Asten', 'Duisburg_Heizkraftwerk_III', 'Duisburg_Ruhrort']# use coma in delimiter

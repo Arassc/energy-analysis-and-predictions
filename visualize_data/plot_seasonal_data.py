@@ -6,7 +6,7 @@ def plot_all_seasonal_data_for_one_energy(seasonal_dict:dict, energy:str):
     for keys, values in seasonal_dict.items():
 
         target = energy + ' [MWh]'
-        fig.add_trace(go.Scatter(x=values['Timestamp'], y=values['Photovoltaik [MWh]'],
+        fig.add_trace(go.Scatter(x=values['Timestamp'], y=values[target],
                                     name=keys)) # line_color='rgba(18,85,194,082)' black
 
         fig.update_layout(
