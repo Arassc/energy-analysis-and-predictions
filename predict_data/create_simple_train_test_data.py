@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-from process_data.preprocessor import scale_data
+from preprocess_data.scale_data import scale_data
 from typing import Tuple
 
 def split_df_in_train_test(df: pd.DataFrame, split_ratio, memory_ratio)-> Tuple:

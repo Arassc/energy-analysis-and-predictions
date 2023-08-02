@@ -4,13 +4,16 @@ import pandas as pd
 import numpy as np
 import math
 from sklearn.metrics import mean_squared_error
+from utils.parameters import RESULTS
+
 # rgba from https://rgbacolorpicker.com/
 
 def plot_predict_vs_test(df:pd.DataFrame,
                          y_test:np.ndarray,
                          y_pre: np.ndarray,
                          fig_title:str,
-                         target: str):
+                         target: str,
+                         fig_name: str):
 
     y_test_df = pd.DataFrame(y_test[:,0])
     y_pre_df = pd.DataFrame(y_pre[:,0])
@@ -57,5 +60,5 @@ def plot_predict_vs_test(df:pd.DataFrame,
     fig.update_layout(
         title=go.layout.Title(
         text=fig_title))
-
+    fig.write_html( RESULTS + '/' + fig_name + '.html')
     fig.show()

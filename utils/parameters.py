@@ -10,6 +10,10 @@ ENERGY_COMPANY_SECTOR = os.environ.get('ENERGY_COMPANY_SECTOR')
 EVALUATION_START_DATE = os.environ.get('EVALUATION_START_DATE')
 EVALUATION_END_DATE = os.environ.get('EVALUATION_END_DATE')
 GREEN_ENERGIES_FOLDER = os.environ.get('GREEN_ENERGIES_FOLDER')
+RESULTS = os.environ.get('RESULTS')
+PROCESSED_DATA_FOLDER  = os.environ.get('PROCESSED_DATA_FOLDER')
+
+# ML flow
 MODEL_TARGET = os.environ.get('MODEL_TARGET')
 LOCAL_REGISTRY_PATH = os.environ.get('LOCAL_REGISTRY_PATH')
 MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI")
@@ -67,6 +71,3 @@ DICT_COMPANIES_NAME_TO_CHANGE = {'Altenw_rth': 'Altenwoerth',
                                  }
 
 LIST_WEIRD_FIRST_RAW = ['[MW] Berechnete Auflösungen', '(3 GT + 1 DT, Sammelschiene)', 'GT 1, GT 2, DT 1 [MW] Berechnete Auflösungen']
-#'Braunkohlekraftwerk Lippendorf':'Braunkohlekraftwerk-Lippendorf'
-
-# Heizkraftwerk_Dresden-Nossener_Br_cke' -> weird first raw with

@@ -3,9 +3,10 @@ Plot companies stocks interactivelly selecting timestamp/date
 """
 import plotly.express as px
 #Creating interactive plots for the three timeframes.
+from utils.parameters import RESULTS
 
 def plot_price_with_interactive_timestamps(df, column_index_x_axis,
-                                      column_list_y_axis, fig_title, y_axis_label):
+                                      column_list_y_axis, fig_title, y_axis_label, fig_name):
     """
     Args:\n
     - df: dataframe\n
@@ -47,5 +48,5 @@ def plot_price_with_interactive_timestamps(df, column_index_x_axis,
         )
     )#Necessary to also zoom into the y-axis.
     fig.update_yaxes(fixedrange=False)#Actually plotting the data.
+    fig.write_html( RESULTS + '/' + fig_name + '.html')
     fig.show()
-    #plt.savefig(filename)

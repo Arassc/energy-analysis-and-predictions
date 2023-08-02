@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import math
 from typing import Tuple
-from process_data.preprocessor import scale_data
+from preprocess_data.scale_data import scale_data
 
 
 def get_train_test_split(df: pd.DataFrame,

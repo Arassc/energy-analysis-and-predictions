@@ -1,7 +1,8 @@
 
 import plotly.graph_objects as go
+from utils.parameters import RESULTS
 
-def plot_all_seasonal_data_for_one_energy(seasonal_dict:dict, energy:str):
+def plot_all_seasonal_data_for_one_energy(seasonal_dict:dict, energy:str, fig_name:str):
     fig = go.Figure()
     for keys, values in seasonal_dict.items():
 
@@ -13,4 +14,6 @@ def plot_all_seasonal_data_for_one_energy(seasonal_dict:dict, energy:str):
             title=go.layout.Title(text= target + ' for every season'),
             xaxis_title='Timestamp',
             yaxis_title='MWh')
+
+    fig.write_html( RESULTS + '/' + fig_name + '.html')
     fig.show()
