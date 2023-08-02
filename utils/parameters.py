@@ -9,13 +9,35 @@ ENERGY_COMPANIES_FOLDER  =  os.environ.get('ENERGY_COMPANIES_FOLDER')
 ENERGY_COMPANY_SECTOR = os.environ.get('ENERGY_COMPANY_SECTOR')
 EVALUATION_START_DATE = os.environ.get('EVALUATION_START_DATE')
 EVALUATION_END_DATE = os.environ.get('EVALUATION_END_DATE')
+GREEN_ENERGIES_FOLDER = os.environ.get('GREEN_ENERGIES_FOLDER')
+RESULTS = os.environ.get('RESULTS')
+PROCESSED_DATA_FOLDER  = os.environ.get('PROCESSED_DATA_FOLDER')
 
+# ML flow
 MODEL_TARGET = os.environ.get('MODEL_TARGET')
 LOCAL_REGISTRY_PATH = os.environ.get('LOCAL_REGISTRY_PATH')
 MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI")
 MLFLOW_EXPERIMENT = os.environ.get("MLFLOW_EXPERIMENT")
 MLFLOW_MODEL_NAME = os.environ.get("MLFLOW_MODEL_NAME")
 
+# param dates
+WINTER_START = '-12-21 1:00:00'
+WINTER_END = '-03-20 00:00:00'
+
+SPRING_START = '-03-21 1:00:00'
+SPRING_END = '-06-20 00:00:00'
+
+SUMMER_START = '-06-21 1:00:00'
+SUMMER_END = '-09-21 00:00:00'
+
+AUTUM_START = '-09-22 1:00:00'
+AUTUM_END = '-12-20 00:00:00'
+
+
+SEASONS_DICT = {'Winter' : [WINTER_START, WINTER_END],
+                'Spring' : [SPRING_START, SPRING_END],
+                'Summer' : [SUMMER_START, SUMMER_END],
+                'Autum' : [AUTUM_START, AUTUM_END]}
 
 # Power Plants
 LIST_COMA_DELIMITER_FILES = ['Abwinden-Asten', 'Duisburg_Heizkraftwerk_III', 'Duisburg_Ruhrort']# use coma in delimiter
@@ -49,6 +71,3 @@ DICT_COMPANIES_NAME_TO_CHANGE = {'Altenw_rth': 'Altenwoerth',
                                  }
 
 LIST_WEIRD_FIRST_RAW = ['[MW] Berechnete Auflösungen', '(3 GT + 1 DT, Sammelschiene)', 'GT 1, GT 2, DT 1 [MW] Berechnete Auflösungen']
-#'Braunkohlekraftwerk Lippendorf':'Braunkohlekraftwerk-Lippendorf'
-
-# Heizkraftwerk_Dresden-Nossener_Br_cke' -> weird first raw with

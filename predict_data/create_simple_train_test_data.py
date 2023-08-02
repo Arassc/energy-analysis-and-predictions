@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-from process_data.preprocessor import scale_data
+from preprocess_data.scale_data import scale_data
 from typing import Tuple
 
 def split_df_in_train_test(df: pd.DataFrame, split_ratio, memory_ratio)-> Tuple:
@@ -24,13 +24,17 @@ def get_X_y_scaled_and_splited(df: pd.DataFrame,
                                split_ratio: float,
                                memory_split_ratio: float,
                                stride_ratio: float,
-                               target: str) -> Tuple:
+                               target: str,
+                               scale_range_min : float ,
+                               scale_range_max: float
+                               ) -> Tuple:
     cols = df.columns
     #split data
     (df_train, df_test) = split_df_in_train_test(df, split_ratio, memory_split_ratio)
 
     #scale data
-    scaler = scale_data(df_train, -1,1)
+    scaler = scale_data(df_train, scale_range_min , scale_range_max)
+
     train_scaled = scaler.transform(df_train)
     test_scaled = scaler.transform(df_test)
 
