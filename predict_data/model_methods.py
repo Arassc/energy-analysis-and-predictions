@@ -1,7 +1,8 @@
-from keras import Model, optimizers
+from keras import Model, optimizers, models
 import numpy as np
 from keras.callbacks import EarlyStopping
 from typing import Tuple
+import pickle
 
 def compile_model(model: Model, learning_rate: int, optimizer="rmsprop", metric="mae")-> Model:
     """
@@ -49,3 +50,22 @@ def evaluate_model(model: Model, X_test: np.ndarray, y_test: np.ndarray) -> list
 def predict_model(model: Model, X_test: np.ndarray) -> np.ndarray:
     y_pred = model.predict(X_test)
     return y_pred
+
+
+def save_model(model: Model, filename):
+
+    filename_model = f'model_' + filename
+    model.save(filename_model)
+
+    filename_history = f'history_' + filename
+    with open(filename_history, 'wb') as file_pickle:
+        pickle.dump(history_v3.history, file_pickle)
+
+def load_model(filename):
+
+    filename_model = f'model_' + filename
+    model =  models.load_model(folder_model)
+    filename_history = f'history_' + filename
+    history = pickle.load(open(filename_history, 'rb'))
+
+    return model, history

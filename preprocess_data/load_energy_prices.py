@@ -2,7 +2,37 @@ import numpy as np
 import pandas as pd
 import functools
 import os
-from utils.parameters import PROCESSED_DATA_FOLDER
+from utils.parameters import PROCESSED_DATA_FOLDER, PRICE_COLUMN_TRANSLATED_EN
+
+
+def load_energy_prices_from_all_files(folder:str, country:str)->pd.DataFrame:
+    list_files =  os.listdir(folder)
+    df_list = []
+    for file in list_files:
+        print(file)
+        if '.csv' in file:
+            filename = os.path.join(folder, file)
+            df = load_energy_prices_data(filename, country)
+            #print(df.columns)
+            df.set_index('Date', inplace=True)
+            #print(df.columns)
+            df_list.append(df)
+            print('\n')
+
+    final_df = pd.concat(df_list).sort_index()
+    final_df.to_csv(PROCESSED_DATA_FOLDER +  '/' + 'processed_energy_prices.csv')
+    return final_df
+
+
+def load_energy_prices_data(filename:str, country:str) -> pd.DataFrame:
+    """
+    Load energy price data for a specific country using load_csv_file function.\n
+    Data is already cleaned up using get_final_price_value function.
+    """
+    df_list = load_csv_file(filename, country)
+    df = get_final_price_value(df_list, country)
+    return df
+
 
 def load_csv_file(filename:str, country:str)->list:
     """
@@ -18,25 +48,7 @@ def load_csv_file(filename:str, country:str)->list:
         belonging to the selected country
     """
     prices_df = pd.read_csv(filename, delimiter=';', decimal=',')
-    prices_df.columns = ['Date', 'Start', 'End',
-         'Germany/Luxembourg [€/MWh]',
-         '∅ residents Germany/Luxembourg [€/MWh]',
-         'Belgium [€/MWh]',
-         'Denmark 1 [€/MWh]',
-         'Denmark 2 [€/MWh]',
-         'France [€/MWh]',
-         'Netherlands [€/MWh]',
-         'Norway 2 [€/MWh]',
-         'Austria [€/MWh]',
-         'Poland [€/MWh]',
-         'Sweden 4 [€/MWh]',
-         'Switzerland [€/MWh]',
-         'Czech Republic [€/MWh]',
-         'Germany/Luxembourg/Austria [€/MWh]',
-         'Italy (North) [€/MWh]',
-         'Slovenia [€/MWh]',
-         'Hungary [€/MWh]']
-
+    prices_df.columns = PRICE_COLUMN_TRANSLATED_EN
     main_cols = [col for col in prices_df.columns if country in col]
     df_list = []
     for col in main_cols:
@@ -51,33 +63,63 @@ def load_csv_file(filename:str, country:str)->list:
                 df[col] = df[col].str.replace(',', '.')
                 df[col] = df[col].astype('float32')
             df_list.append(df)
-
     return df_list
 
-def average_price_from_merge_df_list(df_list:list, country:str)->pd.DataFrame:
-    """
-    Merge the dataframes in list and average the price value to get a final price.\n
-    The indices of the dataframes should be the same for all dataframes in the list.
-    """
-    df = functools.reduce(lambda left, right: pd.merge(left, right, on='Date'), df_list)
-    len_cols = len(df.columns)
-    selected_cols = df.columns[1:len_cols]
-    df[f'Average {country} [€/MWh]'] = df[selected_cols].mean(axis=1)
-    df = df.drop(columns=selected_cols)
+
+def get_final_price_value(df_list: list, country: str)->pd.DataFrame:
+
+    df = pd.DataFrame.empty
+
+    # df list with length 1
+    if len(df_list) == 1:
+        df = df_list[0]
+
+    # df list with length 2
+    if len(df_list) == 2:
+        df = combine_two_dataframes_from_same_country(df_list, country)
+
+    # df list with length 3
+    if len(df_list) == 3:
+        index_df0 = list(df_list[0].index)
+        index_df1 = list(df_list[1].index)
+        index_df2 = list(df_list[2].index)
+
+        if index_df0 == index_df1 and index_df2 == index_df1:
+            print(f'\tavergae df')
+            df = average_price_from_merge_df_list(df_list, country)
+
+        if index_df0 == index_df1 and index_df2 != index_df1:
+            print(f'\taverge df0 and df1 and then concat df2')
+            df1 = average_price_from_merge_df_list(df_list[0:2])
+            df_list2 = [df1, df_list[2]]
+            df = combine_two_dataframes_from_same_country(df_list2, country)
+
+        if index_df0 == index_df2 and index_df2 != index_df1:
+            print(f'\taverge df0 and df2 and then concat df1')
+            df1 = average_price_from_merge_df_list([df_list[0], df_list[2]])
+            df_list2 = [df1, df_list[1]]
+            df = combine_two_dataframes_from_same_country(df_list2, country)
+
+        if index_df1 == index_df2 and index_df0 != index_df1:
+            print(f'\taverge df1 and df2 and then concat df0')
+            df1 = average_price_from_merge_df_list([df_list[1], df_list[2]])
+            df_list2 = [df1, df_list[0]]
+            df = combine_two_dataframes_from_same_country(df_list2, country)
+        else:
+            print(f'\tconcat dfs')
+            df = pd.concat(df_list).sort_index()
+
+    df.columns = ['Date', f'{country} [€/MWh]']
     return df
 
-def concat_df_list(df_list:list, country:str)-> pd.DataFrame:
-    """
-    Concat dataframes in list. The data frames should have different indices \n
-    and therefore each dataframe can be concataned and complete the final dataframe
-    """
-    for df in df_list:
-        df.columns = ['Date', f'{country} [€/MWh]']
-    df_final = pd.concat(df_list).sort_index()
-    return df_final
 
-def combine_two_dataframes(df_list: list, country: str) -> pd.DataFrame:
-
+def combine_two_dataframes_from_same_country(df_list: list, country: str) -> pd.DataFrame:
+    """
+    A given country can have multiple dataframes. \n
+    For example Germany: "Germany/Luxembourg [€/MWh]',  '∅ residents Germany/Luxembourg [€/MWh]', ..., etc"\n
+    Threfore, we can concatenate them if one has the values that another is missing, \n
+    average them or choosing only one of the dataframes
+    """
     df = pd.DataFrame.empty
 
     if len(df_list) == 2:
@@ -100,76 +142,25 @@ def combine_two_dataframes(df_list: list, country: str) -> pd.DataFrame:
     return df
 
 
-def get_final_price_value(df_list: list, country: str)->pd.DataFrame:
-
-    df = pd.DataFrame.empty
-
-    # df list with length 1
-    if len(df_list) == 1:
-        df = df_list[0]
-
-    # df list with length 2
-    if len(df_list) == 2:
-        df = combine_two_dataframes(df_list, country)
-
-    # df list with length 3
-    if len(df_list) == 3:
-        index_df0 = list(df_list[0].index)
-        index_df1 = list(df_list[1].index)
-        index_df2 = list(df_list[2].index)
-
-        if index_df0 == index_df1 and index_df2 == index_df1:
-            print(f'\tavergae df')
-            df = average_price_from_merge_df_list(df_list, country)
-
-        if index_df0 == index_df1 and index_df2 != index_df1:
-            print(f'\taverge df0 and df1 and then concat df2')
-            df1 = average_price_from_merge_df_list(df_list[0:2])
-            df_list2 = [df1, df_list[2]]
-            df = combine_two_dataframes(df_list2, country)
-
-        if index_df0 == index_df2 and index_df2 != index_df1:
-            print(f'\taverge df0 and df2 and then concat df1')
-            df1 = average_price_from_merge_df_list([df_list[0], df_list[2]])
-            df_list2 = [df1, df_list[1]]
-            df = combine_two_dataframes(df_list2, country)
-
-        if index_df1 == index_df2 and index_df0 != index_df1:
-            print(f'\taverge df1 and df2 and then concat df0')
-            df1 = average_price_from_merge_df_list([df_list[1], df_list[2]])
-            df_list2 = [df1, df_list[0]]
-            df = combine_two_dataframes(df_list2, country)
-        else:
-            print(f'\tconcat dfs')
-            df = pd.concat(df_list).sort_index()
-
-    df.columns = ['Date', f'{country} [€/MWh]']
+def average_price_from_merge_df_list(df_list:list, country:str)->pd.DataFrame:
+    """
+    Merge the dataframes in list and average the price value to get a final price.\n
+    The indices of the dataframes should be the same for all dataframes in the list.
+    """
+    df = functools.reduce(lambda left, right: pd.merge(left, right, on='Date'), df_list)
+    len_cols = len(df.columns)
+    selected_cols = df.columns[1:len_cols]
+    df[f'Average {country} [€/MWh]'] = df[selected_cols].mean(axis=1)
+    df = df.drop(columns=selected_cols)
     return df
 
 
-def load_energy_prices_data(filename:str, country:str)->pd.DataFrame:
+def concat_df_list(df_list:list, country:str)-> pd.DataFrame:
     """
-    Load energy price data for a specific country using load_csv_file function.\n
-    Data is already cleaned up using get_final_price_value function.
+    Concat dataframes in list. The data frames should have different indices \n
+    and therefore each dataframe can be concataned and complete the final dataframe
     """
-    df_list = load_csv_file(filename, country)
-    df = get_final_price_value(df_list, country)
-    return df
-
-def load_energy_prices_from_all_files(folder:str, country:str)->pd.DataFrame:
-    list_files =  os.listdir(folder)
-    df_list = []
-    for file in list_files:
-        print(file)
-        if '.csv' in file:
-            filename = os.path.join(folder, file)
-            df = load_energy_prices_data(filename, country)
-            #print(df.columns)
-            df.set_index('Date', inplace=True)
-            #print(df.columns)
-            df_list.append(df)
-            print('\n')
-
-    final_df = pd.concat(df_list).sort_index()
-    final_df.to_csv(PROCESSED_DATA_FOLDER +  '/' + 'processed_energy_prices.csv')
-    return final_df
+    for df in df_list:
+        df.columns = ['Date', f'{country} [€/MWh]']
+    df_final = pd.concat(df_list).sort_index()
+    return df_final

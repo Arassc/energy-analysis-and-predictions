@@ -8,13 +8,45 @@ import numpy as np
 import pandas as pd
 import os
 pd.options.mode.chained_assignment = None
-from sklearn.impute import SimpleImputer
 from utils.parameters import GREEN_ENERGIES_FOLDER, PROCESSED_DATA_FOLDER
 from preprocess_data.load_energy_produced_by_companies import clean_column_dataframe
-DICT_GREEN_ENERGIES = {'Photovoltaik':1004068, 'Wind (Onshore)':1004067, 'Wind (Offshore)':1001225, 'Erdgas':1004071}
+DICT_GREEN_ENERGIES = {'Solar':1004068, 'Wind_Onshore':1004067, 'Wind_Offshore':1001225, 'Natural_Gas':1004071}
+# Natural_Gas is for comparing its dataframe with the one loaded with load_energy_produced_by_companies
+
+def load_green_energy_data(energy:str) -> pd.DataFrame:
+    folder = GREEN_ENERGIES_FOLDER + '/' + energy
+    energy_list = os.listdir(folder)
+    energy_list.sort()
+    df_list = []
+    energy_col = energy + ' [MWh]'
+
+    for file in energy_list:
+        # take only csv files
+        if 'Identifier' not in file:
+            df = pd.read_csv(GREEN_ENERGIES_FOLDER + '/' +  energy + '/' + file, delimiter=';', decimal=',')
+            df = clean_and_group_data_per_hour(df, energy_col)
+            df_list.append(df)
+
+    final_df = pd.concat(df_list)
+    final_df = final_df.reset_index(drop=True)
+    final_df.to_csv(PROCESSED_DATA_FOLDER + '/' + 'processed_power_from_' + energy + '.csv')
+
+    return final_df
 
 
-def load_green_energy_data(date_1, date_2, energy, region, initial_iteration, limit_iteration):
+def clean_and_group_data_per_hour(df: pd.DataFrame, energy_col:str) -> pd.DataFrame:
+    df.columns = ['Datum', 'Anfang', 'Ende', energy_col]
+    df['Timestamp'] = pd.to_datetime(df['Datum'] + ' ' + df['Anfang'], format='%d.%m.%Y %H:%M')
+    df = df.drop(columns=['Datum','Anfang', 'Ende'])
+    df = clean_column_dataframe(df, energy_col)
+
+    # sum power values for every hour and ignoring timestamp column
+    dict_grouping = {'Timestamp': 'first',  energy_col : 'sum'}
+    df = df.groupby(df.index // 4).agg(dict_grouping)
+    return df
+
+
+def load_green_energy_production_from_web(date_1, date_2, energy_sector, region, initial_iteration, limit_iteration):
     # parameters
     i = initial_iteration
     steps_size = 86400000
@@ -44,7 +76,7 @@ def load_green_energy_data(date_1, date_2, energy, region, initial_iteration, li
         # connect to url
         web_site = 'https://www.smard.de/home/marktdaten?marketDataAttributes=%7B%22resolution%22:%22hour%22,%22from%22:' + \
             str(start) + ',%22to%22:' + str(end) + ',%22moduleIds%22:%5B' + \
-                str(DICT_GREEN_ENERGIES[energy]) + \
+                str(DICT_GREEN_ENERGIES[energy_sector]) + \
                     '%5D,%22selectedCategory%22:1,%22activeChart%22:false,%22style%22:%22color%22,%22categoriesModuleOrder%22:%7B%7D,%22region%22:%22' + \
                     region+'%22%7D'
 
@@ -84,40 +116,4 @@ def load_green_energy_data(date_1, date_2, energy, region, initial_iteration, li
         driver.close()
         i=i+1
 
-
-def load_green_energy_data(energy:str) -> pd.DataFrame:
-    folder = GREEN_ENERGIES_FOLDER + '/' + energy
-    energy_list = os.listdir(folder)
-    energy_list.sort()
-    df_list = []
-    energy_col = energy + ' [MWh]'
-
-    for file in energy_list:
-        # take only csv files
-        if 'Identifier' not in file:
-            df = pd.read_csv(GREEN_ENERGIES_FOLDER + '/' +  energy + '/' + file, delimiter=';', decimal=',')
-            df = clean_and_group_data_per_hour(df, energy_col)
-            df_list.append(df)
-
-    final_df = pd.concat(df_list)
-    final_df = final_df.reset_index(drop=True)
-    #final_df = final_df.sort_values(by='Timestamp')
-    #final_df = final_df.sort_index()
-    final_df.to_csv(PROCESSED_DATA_FOLDER + '/' + 'processed_power_from_' + energy + '.csv')
-
-    return final_df
-
-
-def clean_and_group_data_per_hour(df: pd.DataFrame, energy_col:str) -> pd.DataFrame:
-    df.columns = ['Datum', 'Anfang', 'Ende', energy_col]
-    df['Timestamp'] = pd.to_datetime(df['Datum'] + ' ' + df['Anfang'], format='%d.%m.%Y %H:%M')
-    df = df.drop(columns=['Datum','Anfang', 'Ende'])
-    df = clean_column_dataframe(df, energy_col)
-
-    # sum power values for every hour and ignoring timestamp column
-    dict_grouping = {'Timestamp': 'first',  energy_col : 'sum'}
-    df = df.groupby(df.index // 4).agg(dict_grouping)
-    return df
-
-
-# Realisierte_Erzeugung_2021-07-06-0059_2021-07-08-0059_viertelstunde
+# Example file downloaded Realisierte_Erzeugung_2021-07-06-0059_2021-07-08-0059_viertelstunde
