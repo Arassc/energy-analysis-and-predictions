@@ -28,8 +28,6 @@ def train_model(model: Model, X_train: np.ndarray, y_train: np.ndarray,
 
     es = EarlyStopping(patience=patience, monitor="val_loss")
 
-    #es = EarlyStopping(patience=patience)
-
     history = model.fit(X_train, np.array(y_train),
             validation_split=0.3,
             batch_size=batch_size,
@@ -52,20 +50,17 @@ def predict_model(model: Model, X_test: np.ndarray) -> np.ndarray:
     return y_pred
 
 
-def save_model(model: Model, filename):
-
-    filename_model = f'model_' + filename
+def save_model_and_history(model: Model, foldername:str, filename:str):
+    filename_model = foldername + '/model_' + filename + '.h5'
     model.save(filename_model)
 
-    filename_history = f'history_' + filename
+    filename_history = foldername + '/history_' + filename + '.pkl'
     with open(filename_history, 'wb') as file_pickle:
-        pickle.dump(history_v3.history, file_pickle)
+        pickle.dump(model.history, file_pickle)
 
-def load_model(filename):
-
-    filename_model = f'model_' + filename
-    model =  models.load_model(folder_model)
-    filename_history = f'history_' + filename
+def load_model_and_history(foldername:str, filename:str):
+    filename_model = foldername + '/model_' + filename + '.h5'
+    model =  models.load_model(filename_model)
+    filename_history = foldername + '/history_' + filename + '.pkl'
     history = pickle.load(open(filename_history, 'rb'))
-
     return model, history
