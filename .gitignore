@@ -1,5 +1,6 @@
 #folders
 raw_data/
+notebooks/
 
 # enviromental variables
 .env
