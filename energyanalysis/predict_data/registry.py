@@ -3,7 +3,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 import pickle
 from tensorflow import keras
-from energy_app.utils.parameters import MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT,\
+from energyanalysis.utils.parameters import MLFLOW_TRACKING_URI, MLFLOW_EXPERIMENT,\
                             MODEL_TARGET, LOCAL_REGISTRY_PATH,\
                             MLFLOW_MODEL_NAME
 

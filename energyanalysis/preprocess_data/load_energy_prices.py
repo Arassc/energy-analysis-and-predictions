@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import functools
 import os
-from energy_app.utils.parameters import PROCESSED_DATA_FOLDER, PRICE_COLUMN_TRANSLATED_EN
+from energyanalysis.utils.parameters import PROCESSED_DATA_FOLDER, PRICE_COLUMN_TRANSLATED_EN
 
 
 def load_energy_prices_from_all_files(folder:str, country:str)->pd.DataFrame:

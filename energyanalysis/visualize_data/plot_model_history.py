@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from energy_app.utils.parameters import RESULTS
+from energyanalysis.utils.parameters import RESULTS
 
 def plot_history(history: tf.keras.callbacks.History,
                  batch_size: int,

@@ -6,7 +6,7 @@ with open('requirements.txt') as file:
 
 requirements = [x.strip() for x in content if 'git+' not in x]
 
-setup(name='energy-app',
+setup(name='energyanalysis',
       version='0.0.1',
       description='Analyze and predict german energy prices and production',
       author='Araceli Sebastian',

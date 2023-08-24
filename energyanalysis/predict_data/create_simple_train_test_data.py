@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-from energy_app.preprocess_data.scale_data import scale_data
+from energyanalysis.preprocess_data.scale_data import scale_data
 from typing import Tuple
 
 def get_X_y_scaled_and_splited(df: pd.DataFrame,

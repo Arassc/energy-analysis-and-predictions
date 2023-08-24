@@ -3,11 +3,11 @@ import pandas as pd
 import os
 pd.options.mode.chained_assignment = None
 from sklearn.impute import SimpleImputer
-from energy_app.utils.parameters import ENERGY_COMPANIES_FOLDER, \
+from energyanalysis.utils.parameters import ENERGY_COMPANIES_FOLDER, \
                             DICT_COMPANIES_NAME_TO_CHANGE,\
                             LIST_WEIRD_FIRST_RAW
 
-from energy_app.preprocess_data.get_energy_sectors import get_energy_sectors_list
+from energyanalysis.preprocess_data.get_energy_sectors import get_energy_sectors_list
 
 def load_company_data_by_sector():
     # load sectors and companies

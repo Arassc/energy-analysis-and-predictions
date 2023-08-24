@@ -1,6 +1,6 @@
 import pandas as pd
 
-from energy_app.utils.parameters import ENERGY_COMPANY_SECTOR
+from energyanalysis.utils.parameters import ENERGY_COMPANY_SECTOR
 
 def get_energy_sectors_list()-> tuple:
     sector_df = load_company_sectors()

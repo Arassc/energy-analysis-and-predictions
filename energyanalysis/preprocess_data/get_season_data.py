@@ -1,6 +1,6 @@
 
 import pandas as pd
-from energy_app.utils.parameters import SEASONS_DICT
+from energyanalysis.utils.parameters import SEASONS_DICT
 from datetime import datetime
 
 def get_dict_of_seasons(df_all:pd.DataFrame, energy_sector:str) -> dict:

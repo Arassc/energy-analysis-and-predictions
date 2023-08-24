@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import os
 pd.options.mode.chained_assignment = None
-from energy_app.utils.parameters import GREEN_ENERGIES_FOLDER, PROCESSED_DATA_FOLDER
-from energy_app.preprocess_data.load_energy_produced_by_companies import clean_column_dataframe
+from energyanalysis.utils.parameters import GREEN_ENERGIES_FOLDER, PROCESSED_DATA_FOLDER
+from energyanalysis.preprocess_data.load_energy_produced_by_companies import clean_column_dataframe
 DICT_GREEN_ENERGIES = {'Solar':1004068, 'Wind_Onshore':1004067, 'Wind_Offshore':1001225, 'Natural_Gas':1004071}
 # Natural_Gas is for comparing its dataframe with the one loaded with load_energy_produced_by_companies
 

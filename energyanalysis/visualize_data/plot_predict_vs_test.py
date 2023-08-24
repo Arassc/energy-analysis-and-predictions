@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import math
 from sklearn.metrics import mean_squared_error
-from energy_app.utils.parameters import RESULTS
+from energyanalysis.utils.parameters import RESULTS
 
 # rgba from https://rgbacolorpicker.com/
 

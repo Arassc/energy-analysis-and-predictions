@@ -1,6 +1,6 @@
 
 import plotly.graph_objects as go
-from energy_app.utils.parameters import RESULTS
+from energyanalysis.utils.parameters import RESULTS
 
 def plot_all_seasonal_data_for_one_energy(seasonal_dict:dict, energy:str, fig_name:str):
     fig = go.Figure()

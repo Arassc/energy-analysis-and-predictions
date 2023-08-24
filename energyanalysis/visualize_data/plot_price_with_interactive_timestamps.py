@@ -3,7 +3,7 @@ Plot companies stocks interactivelly selecting timestamp/date
 """
 import plotly.express as px
 #Creating interactive plots for the three timeframes.
-from energy_app.utils.parameters import RESULTS
+from energyanalysis.utils.parameters import RESULTS
 
 def plot_price_with_interactive_timestamps(df, column_index_x_axis,
                                       column_list_y_axis, fig_title, y_axis_label, fig_name):
