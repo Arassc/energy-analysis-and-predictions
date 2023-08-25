@@ -1,2 +1,29 @@
 selenium
 webdriver-manager
+wheel
+nbresult
+ipdb
+ipykernel
+yapf
+matplotlib
+plotly==5.9.0
+nbformat==5.7.0
+numpy==1.23.5
+pandas==1.5.3
+scikit-learn==1.2.1
+db-dtypes
+pyarrow
+tensorflow==2.10.0; sys_platform != 'darwin' # Windows & Ubuntu Intel chips
+mlflow==2.1.1
+
+python-dotenv
+prefect==2.8.1
+psycopg2-binary
+
+# API
+fastapi         # API framework
+pytz            # time zone management
+uvicorn         # web server
+
+# tests
+httpx           # HTTP client

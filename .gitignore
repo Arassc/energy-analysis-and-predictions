@@ -1,9 +1,13 @@
 #folders
 raw_data/
+notebooks/
 
 # enviromental variables
 .env
 .envrc
+
+# package
+*.egg-info
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
