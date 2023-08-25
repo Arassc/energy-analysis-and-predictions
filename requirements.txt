@@ -2,17 +2,14 @@ selenium
 webdriver-manager
 wheel
 nbresult
-colorama
 ipdb
 ipykernel
 yapf
 matplotlib
-pygeohash
-pytest
-pyplot
+plotly==5.9.0
+nbformat==5.7.0
 numpy==1.23.5
 pandas==1.5.3
-scipy==1.10.0
 scikit-learn==1.2.1
 db-dtypes
 pyarrow
@@ -30,4 +27,3 @@ uvicorn         # web server
 
 # tests
 httpx           # HTTP client
-pytest-asyncio  # asynchronous I/O support for pytest

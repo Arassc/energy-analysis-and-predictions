@@ -4,6 +4,28 @@ contributor specific parameters
 
 import os
 
+#parameters
+COUNTRY = os.environ.get('COUNTRY')
+SPLIT_RADIO = 0.9
+MEMORY_SPLIT_RATIO = 0.011
+STRIDE_RATIO = 0.2
+ACTIVATION_FUNCTION_1 = os.environ.get('ACTIVATION_FUNCTION_1')
+ACTIVATION_FUNCTION_2 = os.environ.get('ACTIVATION_FUNCTION_2')
+MODEL_LAYER_UNITS_1 = os.environ.get('MODEL_LAYER_UNITS_1')
+MODEL_LAYER_UNITS_2 = os.environ.get('MODEL_LAYER_UNITS_2')
+MODEL_TYPE = os.environ.get('MODEL_TYPE')
+MODEL_LOSS = os.environ.get('MOLDE_LOSS')
+OPT_COMPILER = os.environ.get('OPT_COMPILER')
+MODEL_METRIC = os.environ.get('MODEL_METRIC')
+LEARNING_RATE = os.environ.get('LEARNING_RATE')
+PATIENCE = os.environ.get('PATIENCE')
+EPOCHS = os.environ.get('EPOCHS')
+BATCH_SIZE = os.environ.get('BATCH_SIZE')
+REGULARIZER = os.environ.get('REGULARIZER')
+PENALTY = os.environ.get('PENALTY ')
+
+
+
 # folders
 ENERGY_PRICE_FOLDER = os.environ.get('ENERGY_PRICE_FOLDER')
 ENERGY_COMPANIES_FOLDER  =  os.environ.get('ENERGY_COMPANIES_FOLDER')
@@ -13,6 +35,7 @@ EVALUATION_END_DATE = os.environ.get('EVALUATION_END_DATE')
 GREEN_ENERGIES_FOLDER = os.environ.get('GREEN_ENERGIES_FOLDER')
 RESULTS = os.environ.get('RESULTS')
 PROCESSED_DATA_FOLDER  = os.environ.get('PROCESSED_DATA_FOLDER')
+MODELS_PRICES_FOLDER = os.environ.get('MODELS_PRICES_FOLDER')
 
 # ML flow
 MODEL_TARGET = os.environ.get('MODEL_TARGET')
